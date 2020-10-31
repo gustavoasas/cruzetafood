@@ -1,6 +1,7 @@
 package br.com.localdomain.cruzetafood.api.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,10 +92,10 @@ public class RestauranteController {
 	}
 	
 	@PatchMapping("/{restauranteId}")
-	public ResponseEntity<?> aualizarParcial(@PathVariable Long restauranteId, @RequestBody Restaurante restaurante) {
-		System.out.println(restaurante);
-		System.out.println("teste2");
-		
+	public ResponseEntity<?> aualizarParcial(@PathVariable Long restauranteId, @RequestBody Map<String, Object> campos) {		
+		campos.forEach((nomePropriedade, valorPropriedade) -> {
+			System.out.println(nomePropriedade + "- " + valorPropriedade);
+		});
 		return null;		
 	}
 }
