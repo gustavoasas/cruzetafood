@@ -93,6 +93,7 @@ public class RestauranteController {
 	@PatchMapping("/{restauranteId}")
 	public ResponseEntity<?> aualizarParcial(@PathVariable Long restauranteId, @RequestBody Restaurante restaurante) {
 		System.out.println(restaurante);
+		System.out.println("teste2");
 		
 		return null;		
 	}
