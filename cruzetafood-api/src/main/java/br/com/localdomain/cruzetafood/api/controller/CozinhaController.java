@@ -1,6 +1,7 @@
 package br.com.localdomain.cruzetafood.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,17 +35,14 @@ public class CozinhaController {
 	
 	@GetMapping
 	public List<Cozinha> litar(){
-	
-		return cozinhaRepository.listar();
+		return cozinhaRepository.findAll();
 	}
 	
 	@GetMapping("/{cozinhaId}")
 	public ResponseEntity<Cozinha> buscar(@PathVariable Long cozinhaId) {
-		Cozinha cozinha = cozinhaRepository.buscarPorId(cozinhaId);
-		// return ResponseEntity.status(HttpStatus.OK).body(cozinha);
-		//return ResponseEntity.ok(cozinha);
-		if (cozinha != null) {
-			return ResponseEntity.ok(cozinha);
+		Optional<Cozinha> cozinha = cozinhaRepository.findById(cozinhaId);
+		if (cozinha.isPresent()) {
+			return ResponseEntity.ok(cozinha.get());
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -57,13 +55,13 @@ public class CozinhaController {
 	
 	@PutMapping("/{cozinhaId}")	
 	public ResponseEntity<Cozinha> atualizar(@PathVariable Long cozinhaId, @RequestBody Cozinha cozinha) {
-		Cozinha c = cozinhaRepository.buscarPorId(cozinhaId);
+		Optional<Cozinha> cozinhaAtual = cozinhaRepository.findById(cozinhaId);
 		
-		if (c != null) {
+		if (cozinhaAtual.isPresent()) {
 			//Copiando todas as propriedades de um objeto para o outro, ignorando o primeiro atribulto "id"
-			BeanUtils.copyProperties(cozinha, c, "id");
-			cadastroCozinha.salvar(c);
-			return ResponseEntity.ok(c);
+			BeanUtils.copyProperties(cozinha, cozinhaAtual.get(), "id");
+			Cozinha cozinhaSalva = cadastroCozinha.salvar(cozinhaAtual.get());
+			return ResponseEntity.ok(cozinhaSalva);
 		}
 		return ResponseEntity.notFound().build();
 	}

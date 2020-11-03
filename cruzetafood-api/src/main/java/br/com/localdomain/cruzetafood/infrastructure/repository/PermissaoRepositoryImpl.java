@@ -5,12 +5,12 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import br.com.localdomain.cruzetafood.domain.model.Permissao;
 import br.com.localdomain.cruzetafood.domain.repository.PermissaoRepository;
 
-@Component
+@Repository
 public class PermissaoRepositoryImpl implements PermissaoRepository {
 
 	

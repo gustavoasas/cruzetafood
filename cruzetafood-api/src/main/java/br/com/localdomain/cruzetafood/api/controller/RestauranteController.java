@@ -1,5 +1,6 @@
 package br.com.localdomain.cruzetafood.api.controller;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.localdomain.cruzetafood.domain.exception.EntidadeNaoEncontradaException;
 import br.com.localdomain.cruzetafood.domain.model.Restaurante;
@@ -93,9 +97,37 @@ public class RestauranteController {
 	
 	@PatchMapping("/{restauranteId}")
 	public ResponseEntity<?> aualizarParcial(@PathVariable Long restauranteId, @RequestBody Map<String, Object> campos) {		
-		campos.forEach((nomePropriedade, valorPropriedade) -> {
-			System.out.println(nomePropriedade + "- " + valorPropriedade);
+		Restaurante restauranteAtual = repository.buscarPorId(restauranteId);
+		if (restauranteAtual == null) {
+			return ResponseEntity.notFound().build();
+		}
+		merge(campos, restauranteAtual);
+		return atualizar(restauranteId, restauranteAtual);		
+	}
+
+	
+	/**
+	 * Classe responsável por fazer o merge dos dados do objeto recebido via parâmetro
+	 * com o objeto do tipo {@link: Restaurante} que será atualizado usando reflection. 
+	 * 
+	 *  Para Evitar problemas de conversão de dados os campos (dadosOrigem) que foram
+	 *  enviados estão sendo convertidos para o tipo do objeto pertencente na classe
+	 *  através do utilitário {@link: ObjectMapper} do Jackson.
+	 *  
+	 * @Author André Gustavo
+	 */
+	private void merge(Map<String, Object> dadosOrigem, Restaurante restauranteDestino) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		Restaurante restauranteOrigem = objectMapper.convertValue(dadosOrigem, Restaurante.class);
+		
+		dadosOrigem.forEach((nomePropriedade, valorPropriedade) -> {
+			Field field = ReflectionUtils.findField(Restaurante.class, nomePropriedade);
+			field.setAccessible(true);
+			
+			Object novoValor = ReflectionUtils.getField(field, restauranteOrigem);
+			System.out.println(nomePropriedade + " - " + valorPropriedade);
+			
+			ReflectionUtils.setField(field, restauranteDestino, novoValor);
 		});
-		return null;		
 	}
 }
