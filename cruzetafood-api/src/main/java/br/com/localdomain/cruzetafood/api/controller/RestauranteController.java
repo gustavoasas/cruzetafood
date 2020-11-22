@@ -3,6 +3,7 @@ package br.com.localdomain.cruzetafood.api.controller;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,12 +53,12 @@ public class RestauranteController {
 	 */
 	@GetMapping
 	public List<Restaurante> listar(){
-		return repository.todos();
+		return repository.findAll();
 	}
 	
 	@GetMapping("/{restauranteId}")
 	public Restaurante buscar(@PathVariable Long restauranteId) {
-		return repository.buscarPorId(restauranteId);
+		return repository.findById(restauranteId).get();
 	}
 	
 	@PostMapping
@@ -72,13 +73,13 @@ public class RestauranteController {
 	
 	@PutMapping("/{restauranteId}")	
 	public ResponseEntity<Restaurante> atualizar(@PathVariable Long restauranteId, @RequestBody Restaurante restaurante) {
-		Restaurante r = repository.buscarPorId(restauranteId);
+		Optional<Restaurante> restauranteRetornado = repository.findById(restauranteId);
 		
-		if (r != null) {
+		if (restauranteRetornado.isPresent()) {
 			//Copiando todas as propriedades de um objeto para o outro, ignorando o primeiro atribulto "id"
-			BeanUtils.copyProperties(restaurante, r, "id");
-			cadastroRestaurante.salvar(r);
-			return ResponseEntity.ok(r);
+			BeanUtils.copyProperties(restaurante, restauranteRetornado.get(), "id");
+			Restaurante restauranteSalvo = cadastroRestaurante.salvar(restauranteRetornado.get());
+			return ResponseEntity.ok(restauranteSalvo);
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -97,12 +98,12 @@ public class RestauranteController {
 	
 	@PatchMapping("/{restauranteId}")
 	public ResponseEntity<?> aualizarParcial(@PathVariable Long restauranteId, @RequestBody Map<String, Object> campos) {		
-		Restaurante restauranteAtual = repository.buscarPorId(restauranteId);
-		if (restauranteAtual == null) {
+		Optional<Restaurante> restauranteAtual = repository.findById(restauranteId);
+		if (!restauranteAtual.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		merge(campos, restauranteAtual);
-		return atualizar(restauranteId, restauranteAtual);		
+		merge(campos, restauranteAtual.get());
+		return atualizar(restauranteId, restauranteAtual.get());		
 	}
 
 	

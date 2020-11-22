@@ -1,6 +1,7 @@
 package br.com.localdomain.cruzetafood.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,13 +29,13 @@ public class EstadoController {
 	@GetMapping
 	public List<Estado> listar(){
 		System.out.println("\n\n LISTOU ESTADOS \n\n");
-		return repository.listar();  
+		return repository.findAll();  
 	}
 	
 	@PostMapping
 	public ResponseEntity<?> adicionar(@RequestBody Estado estado) {
 		try {
-			estado = repository.salvar(estado);
+			estado = repository.save(estado);
 			return ResponseEntity.status(HttpStatus.CREATED).body(estado);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
@@ -44,8 +45,8 @@ public class EstadoController {
 	@DeleteMapping("/{estadoId}")
 	public ResponseEntity<?> remover(@PathVariable Long estadoId){
 		try {
-			Estado estado = repository.buscar(estadoId);
-			repository.remover(estado);
+			Optional<Estado> estado = repository.findById(estadoId);
+			repository.delete(estado.get());
 			return ResponseEntity.noContent().build();
 		} catch (DataIntegrityViolationException e) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();

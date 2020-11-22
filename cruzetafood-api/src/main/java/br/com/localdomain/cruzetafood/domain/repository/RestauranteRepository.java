@@ -1,6 +1,7 @@
 package br.com.localdomain.cruzetafood.domain.repository;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import br.com.localdomain.cruzetafood.domain.model.Restaurante;
 
@@ -9,11 +10,5 @@ import br.com.localdomain.cruzetafood.domain.model.Restaurante;
  * @Author André Gustavo
  *
  */
-public interface RestauranteRepository {
-
-	List<Restaurante> todos();
-	Restaurante buscarPorId(Long id);
-	Restaurante adicionar(Restaurante restaurante);
-	void remover(Restaurante restaurante);
-	
-}
+@Repository
+public interface RestauranteRepository extends JpaRepository<Restaurante, Long>{}

@@ -40,12 +40,12 @@ public class CadastroRestauranteService {
 			throw new EntidadeNaoEncontradaException(
 					String.format("Não existe cadastro de cozinha com o código %d", cozinhaId));
 		}
-		return restauranteRepository.adicionar(restaurante);			
+		return restauranteRepository.save(restaurante);			
 	}
 	
 	public ResponseEntity<Restaurante> remover(Long restauranteId) {
 		try {
-			restauranteRepository.remover(restauranteRepository.buscarPorId(restauranteId));
+			restauranteRepository.delete(restauranteRepository.findById(restauranteId).get());
 			return ResponseEntity.noContent().build();
 
 		} catch (EmptyResultDataAccessException e) {

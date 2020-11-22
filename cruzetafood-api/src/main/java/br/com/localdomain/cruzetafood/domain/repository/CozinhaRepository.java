@@ -1,5 +1,7 @@
 package br.com.localdomain.cruzetafood.domain.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +15,6 @@ import br.com.localdomain.cruzetafood.domain.model.Cozinha;
 @Repository
 public interface CozinhaRepository extends JpaRepository<Cozinha, Long>{
 
-	//List<Cozinha> consultarPorNome(String nome);
+	List<Cozinha> nome(String nome);
 	
 }
