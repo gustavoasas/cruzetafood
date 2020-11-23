@@ -1,0 +1,26 @@
+package br.com.localdomain.cruzetafood.api.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.com.localdomain.cruzetafood.domain.model.Restaurante;
+import br.com.localdomain.cruzetafood.domain.repository.RestauranteRepository;
+
+@RestController
+@RequestMapping("/teste")
+public class TesteController {
+
+	@Autowired
+	private RestauranteRepository restauranteRepository;
+	
+	
+	@GetMapping("/restaurantes/por-nome")
+	public List<Restaurante> restaurantesPorTaxaFrete(
+			String nome, Long cozinhaId){
+		return restauranteRepository.consultarPorNome(nome, cozinhaId);
+	}
+}
