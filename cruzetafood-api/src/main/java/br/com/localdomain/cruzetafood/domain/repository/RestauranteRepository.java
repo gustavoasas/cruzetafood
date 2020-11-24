@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import br.com.localdomain.cruzetafood.domain.model.Restaurante;
+import br.com.localdomain.cruzetafood.infrastructure.repository.RestauranteRepositoryQueries;
 
 /**
  * 
@@ -17,7 +18,8 @@ import br.com.localdomain.cruzetafood.domain.model.Restaurante;
  *
  */
 @Repository
-public interface RestauranteRepository extends JpaRepository<Restaurante, Long>{
+public interface RestauranteRepository extends JpaRepository<Restaurante, Long>, RestauranteRepositoryQueries{
+	
 	List<Restaurante> findByTaxaFreteBetween(BigDecimal taxaInicial, BigDecimal taxaFinal);
 	
 	@Query("from Restaurante where nome like %:nome% and cozinha.id = :id")
