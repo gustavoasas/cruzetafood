@@ -60,3 +60,12 @@ Confira a versão do java instalada
 ```console
 $ java --version
 ```
+
+## Instalação do Banco de dados MYSQL
+## Linux
+
+Ubuntu
+```console
+$ sudo apt install mysql-server
+```
+
