@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import br.com.localdomain.cruzetafood.domain.model.Restaurante;
+import br.com.localdomain.cruzetafood.domain.repository.RestauranteRepositoryQueries;
 
 @Repository
 public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
@@ -48,4 +49,13 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
 		
 		return query.getResultList();
 	}
+
+	@Override
+	public List<Restaurante> findComFreteGratis(String nome) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
+	
 }

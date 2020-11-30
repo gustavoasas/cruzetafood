@@ -1,4 +1,4 @@
-package br.com.localdomain.cruzetafood.infrastructure.repository;
+package br.com.localdomain.cruzetafood.domain.repository;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -9,4 +9,5 @@ public interface RestauranteRepositoryQueries {
 
 	List<Restaurante> find(String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal);
 
+	List<Restaurante> findComFreteGratis(String nome);
 }
