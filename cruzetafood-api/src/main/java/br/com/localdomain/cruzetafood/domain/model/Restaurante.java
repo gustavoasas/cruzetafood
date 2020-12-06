@@ -41,8 +41,9 @@ public class Restaurante {
 	@Column(name = "taxa_frete", nullable = false)
 	private BigDecimal taxaFrete;
 	
+	@JsonIgnore
 	@ManyToOne
-	@JoinColumn(name = "cozinha_id", nullable = false) // Nesse formato é opicional porque por padrão já será criada a coluna "cozinha_id"
+	@JoinColumn(name = "cozinha_id", nullable = false)
 	private Cozinha cozinha;
 	
 	@JsonIgnore
@@ -58,7 +59,7 @@ public class Restaurante {
 	@JsonIgnore
 	@UpdateTimestamp
 	@NotNull(message = "O campo Data Atualização não pode ser vazio.")
-	@Column(nullable = false, columnDefinition = "datetime")
+	@Column(nullable = true, columnDefinition = "datetime")
 	private LocalDateTime dataAtualizacao;
 	
 	@JsonIgnore
