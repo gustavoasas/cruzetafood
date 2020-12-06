@@ -77,7 +77,7 @@ public class RestauranteController {
 		
 		if (restauranteRetornado.isPresent()) {
 			//Copiando todas as propriedades de um objeto para o outro, ignorando o primeiro atribulto "id"
-			BeanUtils.copyProperties(restaurante, restauranteRetornado.get(), "id");
+			BeanUtils.copyProperties(restaurante, restauranteRetornado.get(), "id", "formasPagamento", "endereco", "dataCadastro");
 			Restaurante restauranteSalvo = cadastroRestaurante.salvar(restauranteRetornado.get());
 			return ResponseEntity.ok(restauranteSalvo);
 		}
