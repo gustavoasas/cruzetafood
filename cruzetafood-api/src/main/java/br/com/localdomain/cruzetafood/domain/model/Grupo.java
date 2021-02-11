@@ -1,11 +1,16 @@
 package br.com.localdomain.cruzetafood.domain.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
@@ -17,7 +22,7 @@ import lombok.EqualsAndHashCode;
 public class Grupo {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@NotNull
 	private Long id;
 	
@@ -25,12 +30,11 @@ public class Grupo {
 	@Column(name = "nome", nullable = false)
 	private String nome;
 	
-	@NotNull(message = "O campo Usuário não pode ser vazio.")
-	@JoinColumn(name = "usuario", nullable = false)
-	private Usuario usuario;	
+	@ManyToMany
+	@JoinTable( name = "grupo_permissao",
+			joinColumns = @JoinColumn(name = "grupo_id"),
+			inverseJoinColumns = @JoinColumn(name = "permissao_id"))
+	private List<Permissao> permissoes = new ArrayList<>();
 	
-	@NotNull(message = "O campo Permissao não pode ser vazio.")
-	@OneToMany
-	@JoinColumn(name = "permissao_id")
-	private Permissao permissao;
+	
 }

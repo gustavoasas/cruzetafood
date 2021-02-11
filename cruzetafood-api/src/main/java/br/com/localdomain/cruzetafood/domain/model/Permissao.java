@@ -1,5 +1,6 @@
 package br.com.localdomain.cruzetafood.domain.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,8 +21,10 @@ public class Permissao {
 	private Long id;
 	
 	@NotNull
+	@Column(name = "nome", nullable = false)
 	private String nome;
 	
 	@NotNull
+	@Column(name = "descricao", nullable = false)
 	private String descricao;
 }

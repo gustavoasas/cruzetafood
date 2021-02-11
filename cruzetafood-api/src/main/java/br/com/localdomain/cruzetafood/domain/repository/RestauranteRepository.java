@@ -20,6 +20,13 @@ import br.com.localdomain.cruzetafood.domain.model.Restaurante;
 @Repository
 public interface RestauranteRepository extends CustomJpaRepository<Restaurante, Long>, RestauranteRepositoryQueries, JpaSpecificationExecutor<Restaurante> {
 	
+	
+	/**
+	 * Resolvendo problemas com vários selects pelo hibernate, usando o fetch.
+	 */
+	@Query("FROM Restaurante r JOIN FETCH r.cozinha LEFT JOIN FETCH r.formasPagamento")
+	List<Restaurante> findAll();
+	
 	List<Restaurante> findByTaxaFreteBetween(BigDecimal taxaInicial, BigDecimal taxaFinal);
 	
 	@Query("from Restaurante where nome like %:nome% and cozinha.id = :id")
