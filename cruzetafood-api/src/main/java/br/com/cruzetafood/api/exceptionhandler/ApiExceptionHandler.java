@@ -1,5 +1,6 @@
 package br.com.cruzetafood.api.exceptionhandler;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -12,14 +13,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 
 import br.com.cruzetafood.api.enums.ProblemType;
 import br.com.cruzetafood.domain.exception.EntidadeEmUsoException;
 import br.com.cruzetafood.domain.exception.EntidadeNaoEncontradaException;
 import br.com.cruzetafood.domain.exception.NegocioException;
-import ch.qos.logback.core.status.Status;
-import net.bytebuddy.implementation.bytecode.member.HandleInvocation;
 
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
@@ -29,11 +30,61 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		String detail = "O corpo da requisição está inválido. Verifique erro de sintaxe";
 		Throwable rootCause = ExceptionUtils.getRootCause(ex);
 		
+		if (rootCause instanceof PropertyBindingException)
+			return handlePropertyBindException((PropertyBindingException) rootCause, headers, status, request);
+		
 		if (rootCause instanceof InvalidFormatException)
 			return handleInvalidFormatException((InvalidFormatException) rootCause, headers, status, request);
 		
 		Problem problem = createProblemBuilder(status, ProblemType.MENSAGEM_INCOMPREENSIVEL, detail).build();
 		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+	}
+	
+	/**
+	 * Tratando especificamente algum erro de sintax que possa vir no json enviado. Para esse caso
+	 * o tratamento irá informar uma mensagem mais detalhada para o consumidor da API de forma a 
+	 * ajudar no melhor entendimento da causa do problema.
+	 *  
+	 * <p>
+	 *   Ex: 	No exemplo abaixo o campo "cozinha.id" do tipo "Long" possui um valor "aaa" do tipo String
+	 *   		que não é compativel e portanto o java não fará o parse lancando uma excessão do tipo:
+	 *   		InvalidFormatException.
+	 * </p>
+	 * <pre>
+	 *   {
+	 *		"nome" : "Thai Gourmet Mineira",
+	 *	    "taxaFrete" : 13,
+	 *	    "cozinha" : {
+	 *	        "id" : "aaa"
+	 *	    }
+	 *	 }
+	 * </pre>
+	 *   
+	 * @Author André Gustavo
+	 * @param ex
+	 * @param headers
+	 * @param status
+	 * @param request
+	 * @return
+	 */
+	private ResponseEntity<Object> handleInvalidFormatException(InvalidFormatException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+		ProblemType problemType = ProblemType.MENSAGEM_INCOMPREENSIVEL;
+		String path = joinPathAndFieldNameAsString(ex.getPath());
+		String detail = String.format("A propriedade '%s' recebeu o valor '%s' que é de um tipo incompatível. Corrija e informe um valor compatível como o tipo: %s", path, ex.getValue(), ex.getTargetType().getSimpleName());
+		Problem problem = createProblemBuilder(status, problemType, detail).build();
+		return handleExceptionInternal(ex, problem, headers, status, request);
+	}
+	
+	private ResponseEntity<Object> handlePropertyBindException(PropertyBindingException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+		String path = joinPathAndFieldNameAsString(ex.getPath());
+		ProblemType problemType = ProblemType.MENSAGEM_INCOMPREENSIVEL;
+		String detail = String.format("A propriedade '%s' não existe. Corrija ou remova essa propriedade e tente novamente", path);
+		Problem problem = createProblemBuilder(status, problemType, detail).build();
+		return handleExceptionInternal(ex, problem, headers, status, request);
+	}
+
+	private String joinPathAndFieldNameAsString(List<Reference> references) {
+		return references.stream().map(ref -> ref.getFieldName()).collect(Collectors.joining("."));
 	}
 
 	@ExceptionHandler(EntidadeNaoEncontradaException.class)
@@ -70,38 +121,5 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return Problem.builder().status(status.value()).type(problemType.getUri()).title(problemType.getTitle()).detail(detail);
 	}
 	
-	/**
-	 * Tratando especificamente algum erro de sintax que possa vir no json enviado. Para esse caso
-	 * o tratamento irá informar uma mensagem mais detalhada para o consumidor da API de forma a 
-	 * ajudar no melhor entendimento da causa do problema.
-	 *  
-	 * <p>
-	 *   Ex: 	No exemplo abaixo o campo "cozinha.id" do tipo "Long" possui um valor "aaa" do tipo String
-	 *   		que não é compativel e portanto o java não fará o parse lancando uma excessão do tipo:
-	 *   		InvalidFormatException.
-	 * </p>
-	 * <pre>
-	 *   {
-	 *		"nome" : "Thai Gourmet Mineira",
-	 *	    "taxaFrete" : 13,
-	 *	    "cozinha" : {
-	 *	        "id" : "aaa"
-	 *	    }
-	 *	 }
-	 * </pre>
-	 *   
-	 * @Author André Gustavo
-	 * @param ex
-	 * @param headers
-	 * @param status
-	 * @param request
-	 * @return
-	 */
-	private ResponseEntity<Object> handleInvalidFormatException(InvalidFormatException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-		ProblemType problemType = ProblemType.MENSAGEM_INCOMPREENSIVEL;
-		String path = ex.getPath().stream().map(ref -> ref.getFieldName()).collect(Collectors.joining("."));
-		String detail = String.format("A propriedade '%s' recebeu o valor '%s' que é de um tipo incompatível. Corrija e informe um valor compatível como o tipo: %s", path, ex.getValue(), ex.getTargetType().getSimpleName());
-		Problem problem = createProblemBuilder(status, problemType, detail).build();
-		return handleExceptionInternal(ex, problem, headers, status, request);
-	}
+	
 }
