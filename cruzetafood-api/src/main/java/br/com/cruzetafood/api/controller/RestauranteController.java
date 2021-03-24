@@ -1,6 +1,7 @@
 package br.com.cruzetafood.api.controller;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.server.ServletServerHttpRequest;
-import org.springframework.http.server.reactive.ServletHttpHandlerAdapter;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +43,7 @@ import br.com.cruzetafood.domain.service.CadastroRestauranteService;
 @RequestMapping("/restaurantes")
 public class RestauranteController {
 
-	private final String[] CAMPOS_IGNORADOS_PARA_COPIA = {"id", "formasPagamento", "endereco", "dataCadastro"};
+	private final String[] CAMPOS_IGNORADOS_PARA_COPIA = {"id", "formasPagamento", "endereco", "dataCadastro", "dataAtualizacao"};
 	
 	@Autowired
 	private RestauranteRepository repository;
@@ -87,12 +87,18 @@ public class RestauranteController {
 	@PutMapping("/{restauranteId}")
 	public Restaurante atualizar(@PathVariable Long restauranteId, @RequestBody Restaurante restaurante) {
 		Restaurante restauranteRetornado = cadastroRestauranteService.buscarOuFalhar(restauranteId);
+		restauranteRetornado = atribuiDadosDeAtualizacao(restauranteRetornado);
 		BeanUtils.copyProperties(restaurante, restauranteRetornado, this.CAMPOS_IGNORADOS_PARA_COPIA);
 		try {
 			return cadastroRestauranteService.salvar(restauranteRetornado);
 		} catch (EntidadeNaoEncontradaException e) {
 			throw new NegocioException(e.getMessage(), e);
 		}
+	}
+	
+	private Restaurante atribuiDadosDeAtualizacao(Restaurante restaurante) {
+		restaurante.setDataAtualizacao(LocalDateTime.now());
+		return restaurante;
 	}
 
 	@DeleteMapping("/{restauranteId}")
