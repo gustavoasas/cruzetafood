@@ -16,7 +16,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.validation.Valid;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -31,18 +36,24 @@ import lombok.EqualsAndHashCode;
 @Entity
 public class Restaurante {
 
-	@EqualsAndHashCode.Include
 	@Id
+	@NotNull
+	@EqualsAndHashCode.Include
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@NotNull
+	//@NotNull
+	//@NotEmpty
+	@NotBlank
 	private String nome;
 	
 	@Column(name = "taxa_frete", nullable = false)
+	@PositiveOrZero
 	private BigDecimal taxaFrete;
 	
 //	@JsonIgnore
+	@Valid
+	@NotNull
 	@ManyToOne //(fetch = FetchType.EAGER) // Nem precisava
 	@JoinColumn(name = "cozinha_id", nullable = false)
 	private Cozinha cozinha;
@@ -53,13 +64,13 @@ public class Restaurante {
 	
 	@JsonIgnore
 	@CreationTimestamp
-	@NotNull(message = "O campo Data Cadastro não pode ser vazio.")
+	//@NotNull(message = "O campo Data Cadastro não pode ser vazio.")
 	@Column(nullable = false, columnDefinition = "datetime")	
 	private LocalDateTime dataCadastro;
 	
 	@JsonIgnore
 	@UpdateTimestamp
-	@NotNull(message = "O campo Data Atualização não pode ser vazio.")
+	//@NotNull(message = "O campo Data Atualização não pode ser vazio.")
 	@Column(nullable = true, columnDefinition = "datetime")
 	private LocalDateTime dataAtualizacao;
 	

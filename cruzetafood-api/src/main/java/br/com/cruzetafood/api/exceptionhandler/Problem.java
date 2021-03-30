@@ -1,6 +1,7 @@
 package br.com.cruzetafood.api.exceptionhandler;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -31,10 +32,22 @@ import lombok.Getter;
 @JsonInclude(Include.NON_NULL)
 public class Problem {
 	private Integer status;
+	private LocalDateTime timestamp;
 	private String type;
 	private String title;
 	private String detail;
+	private String userMessage;
+	private List<field> fields;
 	
-	private String userDetail;
-	private LocalDateTime timestamp;
+	@Getter
+	@Builder
+	/**
+	 * TODO: extrair essa classe propria 
+	 * @Author André Gustavo
+	 *
+	 */
+	public static class field {
+		private String nome;
+		private String userMessage;
+	}
 }
