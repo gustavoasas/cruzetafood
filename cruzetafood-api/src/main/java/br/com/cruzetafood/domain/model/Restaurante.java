@@ -22,12 +22,15 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
+import javax.validation.groups.ConvertGroup;
+import javax.validation.groups.Default;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import br.com.cruzetafood.Groups;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -51,8 +54,8 @@ public class Restaurante {
 	@PositiveOrZero
 	private BigDecimal taxaFrete;
 	
-//	@JsonIgnore
 	@Valid
+	@ConvertGroup(from = Default.class, to = Groups.CozinhaId.class)
 	@NotNull
 	@ManyToOne //(fetch = FetchType.EAGER) // Nem precisava
 	@JoinColumn(name = "cozinha_id", nullable = false)
