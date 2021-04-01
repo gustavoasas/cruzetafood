@@ -1,4 +1,4 @@
-package br.com.cruzetafood;
+package br.com.cruzetafood.core.validation;
 
 public interface Groups {
 

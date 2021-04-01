@@ -14,7 +14,7 @@ import javax.validation.groups.ConvertGroup;
 
 import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 
-import br.com.cruzetafood.Groups;
+import br.com.cruzetafood.core.validation.Groups;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -34,6 +34,7 @@ public class Cidade {
 	
 	@Valid
 	@ConvertGroup(from = Default.class, to = Groups.EstadoId.class)
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "estado_id", nullable = false)
 	private Estado estado;

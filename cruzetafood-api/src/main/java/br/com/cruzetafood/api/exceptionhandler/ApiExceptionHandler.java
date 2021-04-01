@@ -2,10 +2,14 @@ package br.com.cruzetafood.api.exceptionhandler;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +41,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	protected String MSG_RECURSO_NAO_ENCONTRADO	= "O Recurso '%s' que você tentou acessar é inesistente";
 	protected String MSG_ERRO_GENERICO_USUARIO_FINAL = "Ocorreu um erro inesperado no sistema, tente novamente mais tarde. Se o problema persistir, entre em contato com o administrador do sistema";
 	protected String MSG_DADOS_INVALIDOS = "Um ou mais campos estão inválidos. Faça o preencimento correto e tente novamente.";
+
+	@Autowired
+	private MessageSource messageSource;
 	
 	@Override
 	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -133,10 +140,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		String detail = String.format(MSG_DADOS_INVALIDOS);
 		BindingResult bindingResult = ex.getBindingResult();
 		List<Problem.field> problemFields = bindingResult.getFieldErrors().stream()
-				.map(fieldError -> Problem.field.builder()
-						.nome(fieldError.getField())
-						.userMessage(fieldError.getDefaultMessage())
-						.build())
+				.map(fieldError -> {					
+					String message = messageSource.getMessage(fieldError, LocaleContextHolder.getLocale());
+					return Problem.field.builder()
+					.nome(fieldError.getField())
+					.userMessage(message)
+					.build();
+				})
 				.collect(Collectors.toList());
 						
 		Problem problem = createProblemBuilder(status, problemType, detail)
