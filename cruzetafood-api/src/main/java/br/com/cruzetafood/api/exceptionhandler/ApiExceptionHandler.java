@@ -2,7 +2,6 @@ package br.com.cruzetafood.api.exceptionhandler;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -15,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -139,11 +139,14 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		ProblemType problemType = ProblemType.DADOS_INVALIDOS;
 		String detail = String.format(MSG_DADOS_INVALIDOS);
 		BindingResult bindingResult = ex.getBindingResult();
-		List<Problem.field> problemFields = bindingResult.getFieldErrors().stream()
-				.map(fieldError -> {					
-					String message = messageSource.getMessage(fieldError, LocaleContextHolder.getLocale());
-					return Problem.field.builder()
-					.nome(fieldError.getField())
+		List<Problem.Object> problemObject = bindingResult.getAllErrors().stream()
+				.map(objectError -> {
+					String name = objectError.getObjectName();
+					if (objectError instanceof FieldError)
+						name = ((FieldError) objectError).getField();					
+					String message = messageSource.getMessage(objectError, LocaleContextHolder.getLocale());
+					return Problem.Object.builder()
+					.nome(name)
 					.userMessage(message)
 					.build();
 				})
@@ -151,7 +154,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 						
 		Problem problem = createProblemBuilder(status, problemType, detail)
 				.userMessage(MSG_DADOS_INVALIDOS)
-				.fields(problemFields)
+				.objects(problemObject)
 				.build();
 		return handleExceptionInternal(ex, problem, headers, status, request);
 	}

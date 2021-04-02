@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import br.com.cruzetafood.domain.exception.CidadeNaoEncontradaException;
 import br.com.cruzetafood.domain.exception.EntidadeEmUsoException;
-import br.com.cruzetafood.domain.exception.EntidadeNaoEncontradaException;
 import br.com.cruzetafood.domain.model.Cidade;
 import br.com.cruzetafood.domain.model.Estado;
 import br.com.cruzetafood.domain.repository.CidadeRepository;

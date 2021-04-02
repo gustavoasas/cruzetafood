@@ -37,7 +37,7 @@ public class Problem {
 	private String title;
 	private String detail;
 	private String userMessage;
-	private List<field> fields;
+	private List<Object> objects;
 	
 	@Getter
 	@Builder
@@ -46,7 +46,7 @@ public class Problem {
 	 * @Author André Gustavo
 	 *
 	 */
-	public static class field {
+	public static class Object {
 		private String nome;
 		private String userMessage;
 	}

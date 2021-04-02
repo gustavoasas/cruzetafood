@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import br.com.cruzetafood.domain.exception.EntidadeEmUsoException;
-import br.com.cruzetafood.domain.exception.EntidadeNaoEncontradaException;
 import br.com.cruzetafood.domain.exception.EstadoNaoEncontradoException;
 import br.com.cruzetafood.domain.model.Cidade;
 import br.com.cruzetafood.domain.model.Estado;

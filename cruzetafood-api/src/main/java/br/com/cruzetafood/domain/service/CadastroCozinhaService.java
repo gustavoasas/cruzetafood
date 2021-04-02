@@ -3,13 +3,10 @@ package br.com.cruzetafood.domain.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import br.com.cruzetafood.domain.exception.CozinhaNaoEncontradaException;
 import br.com.cruzetafood.domain.exception.EntidadeEmUsoException;
-import br.com.cruzetafood.domain.exception.EntidadeNaoEncontradaException;
 import br.com.cruzetafood.domain.model.Cozinha;
 import br.com.cruzetafood.domain.repository.CozinhaRepository;
 

@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.BeanUtils;
@@ -19,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingErrorProcessor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -33,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.cruzetafood.core.validation.ValidacaoException;
 import br.com.cruzetafood.domain.exception.EntidadeNaoEncontradaException;
 import br.com.cruzetafood.domain.exception.NegocioException;
 import br.com.cruzetafood.domain.model.Restaurante;
@@ -97,6 +101,14 @@ public class RestauranteController {
 		}
 	}
 	
+	@PatchMapping("/{restauranteId}")
+	public Restaurante atualizaParcial(@PathVariable Long restauranteId, @RequestBody Map<String, Object> campos, HttpServletRequest request) {
+		Restaurante restauranteAtual = cadastroRestauranteService.buscarOuFalhar(restauranteId);
+		merge(campos, restauranteAtual, request);
+		validate(restauranteAtual, "restaurante");
+		return atualizar(restauranteId, restauranteAtual);
+	}
+	
 	private Restaurante atribuiDadosDeAtualizacao(Restaurante restaurante) {
 		restaurante.setDataAtualizacao(LocalDateTime.now());
 		return restaurante;
@@ -150,11 +162,17 @@ public class RestauranteController {
 				Object novoValor = ReflectionUtils.getField(field, restauranteOrigem);
 				System.out.println(nomePropriedade + " - " + valorPropriedade);
 	
-				ReflectionUtils.setField(field, restauranteDestino, novoValor);
+				ReflectionUtils.setField(field, restauranteDestino, novoValor);				
 			});
 		} catch (IllegalArgumentException ex) {
 			Throwable rootCause = ExceptionUtils.getRootCause(ex);
 			throw new HttpMessageNotReadableException(ex.getMessage(), rootCause, servletServerHttpRequest);
 		}
+	}
+
+	private void validate(Restaurante restauranteOrigem, String objectName) {
+		BeanPropertyBindingResult beanPropertyBindResult = new BeanPropertyBindingResult(restauranteOrigem, objectName);
+		if(beanPropertyBindResult.hasErrors())
+			throw new ValidacaoException(beanPropertyBindResult);
 	}
 }
