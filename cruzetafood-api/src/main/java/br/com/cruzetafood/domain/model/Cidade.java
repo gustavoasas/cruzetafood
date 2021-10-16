@@ -18,6 +18,11 @@ import br.com.cruzetafood.core.validation.Groups;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/**
+ * 
+ * @Author André Gustavo
+ *
+ */
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
