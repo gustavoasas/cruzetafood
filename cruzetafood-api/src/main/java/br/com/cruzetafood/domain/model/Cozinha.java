@@ -35,7 +35,7 @@ public class Cozinha {
 	//@JsonProperty("titulo") // representação formal do nome deste campo para sera exibido quando o recurso for enviado 
 	@NotBlank
 	@Column(nullable = false)
-	private int nome;
+	private String nome;
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "cozinha")
