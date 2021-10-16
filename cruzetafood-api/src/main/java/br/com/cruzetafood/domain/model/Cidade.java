@@ -35,7 +35,7 @@ public class Cidade {
 	
 	@NotBlank
 	@Column(nullable = false)
-	private int nome;
+	private String nome;
 	
 	@Valid
 	@ConvertGroup(from = Default.class, to = Groups.EstadoId.class)
