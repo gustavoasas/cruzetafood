@@ -102,7 +102,7 @@ public class RestauranteController {
 	}
 	
 	@PatchMapping("/{restauranteId}")
-	public Restaurante atualizaParcial(@PathVariable Long restauranteId, @RequestBody Map<String, Object> campos, HttpServletRequest request) {
+	public Restaurante atualizarParcial(@PathVariable Long restauranteId, @RequestBody Map<String, Object> campos, HttpServletRequest request) {
 		Restaurante restauranteAtual = cadastroRestauranteService.buscarOuFalhar(restauranteId);
 		merge(campos, restauranteAtual, request);
 		validate(restauranteAtual, "restaurante");
@@ -126,17 +126,17 @@ public class RestauranteController {
 		}
 	}
 
-	@PatchMapping("/{restauranteId}")
-	@Deprecated
-	public ResponseEntity<?> aualizarParcial(@PathVariable Long restauranteId, @RequestBody Map<String, Object> campos, HttpServletRequest request) {
-		Optional<Restaurante> restauranteAtual = repository.findById(restauranteId);
-		if (!restauranteAtual.isPresent()) {
-			return ResponseEntity.notFound().build();
-		}
-		merge(campos, restauranteAtual.get(), request);
-		//return atualizar(restauranteId, restauranteAtual.get());
-		return null;
-	}
+//	@PatchMapping("/{restauranteId}")
+//	@Deprecated
+//	public ResponseEntity<?> aualizarParcial(@PathVariable Long restauranteId, @RequestBody Map<String, Object> campos, HttpServletRequest request) {
+//		Optional<Restaurante> restauranteAtual = repository.findById(restauranteId);
+//		if (!restauranteAtual.isPresent()) {
+//			return ResponseEntity.notFound().build();
+//		}
+//		merge(campos, restauranteAtual.get(), request);
+//		//return atualizar(restauranteId, restauranteAtual.get());
+//		return null;
+//	}
 
 	/**
 	 * Classe responsável por fazer o merge dos dados do objeto recebido via
