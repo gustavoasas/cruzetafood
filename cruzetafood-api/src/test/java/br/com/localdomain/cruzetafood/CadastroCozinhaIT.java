@@ -1,25 +1,28 @@
 package br.com.localdomain.cruzetafood;
 
-
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import br.com.cruzetafood.CruzetafoodApiApplication;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = CruzetafoodApiApplication.class)
-@SpringBootTest(classes = CruzetafoodApiApplicationTests.class)
-public class CruzetafoodApiApplicationTests {
-
+@SpringBootTest(properties = "spring.main.lazy-initialization=true", classes = CadastroCozinhaIntegrationTests.class)
+public class CadastroCozinhaIT {
+	
 	@Test
-	public void contextLoads() {
-		assertTrue(true);
+	public void deveRetornarStatus200_QuandoConsultarCozinhas() {
+		RestAssured.given()
+			.basePath("/cozinhas")
+			.port(8080)
+			.accept(ContentType.JSON)
+			.when().get().then()
+			.statusCode(HttpStatus.OK.value());
 	}
-
 }
